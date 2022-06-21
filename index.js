@@ -3,12 +3,15 @@ import express from "express";
 import cors from 'cors';
 import dotenv from "dotenv";
 import User from "./models/User.js";
+import auth from "./middleware/auth.js";
+import cookieParser from 'cookie-parser';
 
 const app = express()
 
 dotenv.config();
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
@@ -58,6 +61,20 @@ app.post("/api/users/login", (req, res) => {
 
         });
     });
+})
+
+// role 0 -> 일반유저   role 0이 아니면  관리자
+app.get('/api/users/auth', auth, (req, res) => {
+    res.status(200).json({
+        _id: req.user._id,
+        isAdmin: req.user.role !== 0,
+        isAuth: true,
+        email: req.user.email,
+        name: req.user.name,
+        lastname: req.user.lastname,
+        role: req.user.role,
+        image: req.user.image
+    })
 
 })
 

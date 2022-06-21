@@ -60,12 +60,22 @@ userSchema.methods.comparePassword = function (plainPassword, cb) {
 
 userSchema.methods.generateToken = function (cb) {
     const user = this;
-    user.token = jwt.sign(user._id.toJSON(), 'secretToken');
+    user.token = jwt.sign(user._id.toJSON(), process.env.SECRET_KEY);
     user.save(function (err, user) {
         if(err) return cb(err);
         cb(null, user);
     });
 
+};
+
+userSchema.statics.findByToken = function (token, cb) {
+    const user = this;
+    jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
+        user.findOne({"_id": decoded, "token": token}, function (err, user) {
+            if(err) return cb(err);
+            cb(null, user);
+        });
+    });
 };
 
 const User = mongoose.model('User', userSchema);
