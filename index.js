@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
 import express from "express";
+import cors from 'cors';
+import dotenv from "dotenv";
 
 const app = express()
-const port = 3000
 
-mongoose.connect('mongodb+srv://byunjihjye:asdf33@cluster0.qulah.mongodb.net/?retryWrites=true&w=majority', {
+dotenv.config();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => console.log("MongoDB Connected!"))
@@ -12,8 +19,8 @@ mongoose.connect('mongodb+srv://byunjihjye:asdf33@cluster0.qulah.mongodb.net/?re
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
-}) 
+})
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+app.listen(process.env.PORT, () => {
+    console.log(`Example app listening on port ${process.env.PORT}`)
 })
