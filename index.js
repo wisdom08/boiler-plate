@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import express from "express";
 import cors from 'cors';
 import dotenv from "dotenv";
+import User from "./models/User.js";
 
 const app = express()
 
@@ -19,6 +20,14 @@ mongoose.connect(process.env.MONGO_URI, {
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
+})
+
+app.post("/register", (req, res) => {
+    const user = new User(req.body);
+    user.save((err) => {
+        if(err) return res.json({success: false, err: err});
+        return res.status(200).json({success: true})
+    })
 })
 
 app.listen(process.env.PORT, () => {
